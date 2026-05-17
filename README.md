@@ -143,7 +143,3 @@ Verified outputs from the dry-run above:
 - [ ] Paper draft (IEEE SecDev format)
 
 ---
-
-## License
-
-MIT.

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AutoPatch Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: #0d1117; color: #c9d1d9; }
+    header { padding: 1.25rem 2rem; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 1.25rem; }
+    header .badge { background: #238636; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem; }
+    main { padding: 1.5rem 2rem; display: grid; gap: 1.25rem; grid-template-columns: repeat(4, 1fr); }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; }
+    .card h3 { margin: 0 0 0.5rem; font-size: 0.8rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat { font-size: 2rem; font-weight: 600; }
+    .chart { grid-column: span 2; height: 280px; }
+    .wide { grid-column: span 4; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #30363d; }
+    th { color: #8b949e; font-weight: 500; }
+    .sev-high, .sev-critical { color: #f85149; }
+    .sev-medium { color: #d29922; }
+    .sev-low, .sev-noise { color: #8b949e; }
+    .ok { color: #3fb950; }
+    .no { color: #f85149; }
+    #empty { text-align: center; padding: 3rem; color: #8b949e; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AutoPatch — Live DevSecOps Dashboard</h1>
+    <span class="badge">$0 / month</span>
+  </header>
+  <main id="main"></main>
+
+  <script>
+    const CANDIDATES = [
+      new URLSearchParams(location.search).get("src"),
+      "./history.json",
+      "../.autopatch/history.json",
+    ].filter(Boolean);
+
+    async function load() {
+      let lastErr;
+      for (const url of CANDIDATES) {
+        try {
+          const res = await fetch(url, { cache: "no-cache" });
+          if (!res.ok) { lastErr = "HTTP " + res.status + " from " + url; continue; }
+          const history = await res.json();
+          if (!history.length) { showEmpty("No runs yet."); return; }
+          render(history);
+          return;
+        } catch (e) { lastErr = e.message; }
+      }
+      showEmpty(lastErr);
+    }
+
+    function showEmpty(msg) {
+      document.getElementById("main").innerHTML =
+        `<div class="wide" id="empty">No runs yet. Trigger a scan to populate the dashboard.${msg ? `<br><small>${msg}</small>` : ""}</div>`;
+    }
+
+    function render(history) {
+      const last = history[history.length - 1];
+      const totalFindings = history.reduce((a, r) => a + r.total_findings, 0);
+      const totalFixes = history.reduce((a, r) => a + r.fixes_applied, 0);
+      const fixRate = totalFindings ? ((totalFixes / totalFindings) * 100).toFixed(1) : "0.0";
+
+      const sevAgg = { critical: 0, high: 0, medium: 0, low: 0, noise: 0 };
+      const cweAgg = {};
+      history.forEach(r => {
+        Object.entries(r.by_severity || {}).forEach(([k, v]) => sevAgg[k] = (sevAgg[k] || 0) + v);
+        (r.fixes || []).forEach(f => cweAgg[f.rule] = (cweAgg[f.rule] || 0) + 1);
+      });
+
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="card"><h3>Runs</h3><div class="stat">${history.length}</div></div>
+        <div class="card"><h3>Findings</h3><div class="stat">${totalFindings}</div></div>
+        <div class="card"><h3>Auto-Fixes</h3><div class="stat">${totalFixes}</div></div>
+        <div class="card"><h3>Fix Rate</h3><div class="stat">${fixRate}%</div></div>
+
+        <div class="card chart"><h3>Findings per Run</h3><canvas id="trend"></canvas></div>
+        <div class="card chart"><h3>Severity Mix</h3><canvas id="sev"></canvas></div>
+
+        <div class="card wide">
+          <h3>Latest Run — ${new Date(last.timestamp).toLocaleString()} (${last.llm_backend}${last.dry_run ? ", dry-run" : ""})</h3>
+          <table>
+            <thead><tr><th>Rule</th><th>Path</th><th>Line</th><th>Severity</th><th>Applied</th><th>Rationale</th></tr></thead>
+            <tbody>
+              ${(last.fixes || []).map(f => `
+                <tr>
+                  <td>${escape(f.rule)}</td>
+                  <td>${escape(f.path)}</td>
+                  <td>${f.line}</td>
+                  <td class="sev-${f.severity}">${f.severity}</td>
+                  <td class="${f.applied ? "ok" : "no"}">${f.applied ? "yes" : "no"}</td>
+                  <td>${escape(f.rationale)}</td>
+                </tr>
+              `).join("") || `<tr><td colspan="6">No fixes attempted in latest run.</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      new Chart(document.getElementById("trend"), {
+        type: "line",
+        data: {
+          labels: history.map((_, i) => `#${i + 1}`),
+          datasets: [
+            { label: "Findings", data: history.map(r => r.total_findings), borderColor: "#58a6ff", tension: 0.3 },
+            { label: "Fixes", data: history.map(r => r.fixes_applied), borderColor: "#3fb950", tension: 0.3 },
+          ],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#c9d1d9" } } }, scales: { x: { ticks: { color: "#8b949e" } }, y: { ticks: { color: "#8b949e" } } } },
+      });
+
+      new Chart(document.getElementById("sev"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(sevAgg),
+          datasets: [{ data: Object.values(sevAgg), backgroundColor: ["#f85149", "#db6d28", "#d29922", "#8b949e", "#484f58"] }],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#c9d1d9" } } } },
+      });
+    }
+
+    function escape(s) {
+      return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    }
+
+    load();
+  </script>
+</body>
+</html>

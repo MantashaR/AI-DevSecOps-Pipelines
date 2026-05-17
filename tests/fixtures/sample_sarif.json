@@ -1,0 +1,19 @@
+{
+  "version": "2.1.0",
+  "runs": [{
+    "tool": { "driver": { "name": "semgrep", "rules": [
+      { "id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "defaultConfiguration": { "level": "error" },
+        "properties": { "tags": ["CWE-89"] } }
+    ] } },
+    "results": [{
+      "ruleId": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+      "level": "error",
+      "message": { "text": "Detected SQL injection via string concatenation." },
+      "locations": [{ "physicalLocation": {
+        "artifactLocation": { "uri": "app.py" },
+        "region": { "startLine": 15, "endLine": 16 }
+      } }]
+    }]
+  }]
+}

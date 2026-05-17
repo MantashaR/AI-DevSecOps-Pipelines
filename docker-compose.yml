@@ -1,0 +1,84 @@
+# AutoPatch — one-command operations on any OS (Windows/macOS/Linux).
+#
+# First time on a fresh clone:
+#   docker compose build                       # build the image once
+#
+# Then any of:
+#   docker compose run --rm verify             # full self-test, asserts PASS/FAIL
+#   docker compose run --rm demo               # safe dry-run, file unchanged
+#   docker compose run --rm patch              # real run, mutates target-app/app.py
+#   docker compose run --rm scan               # just the scanners -> *.sarif
+#   docker compose up dashboard                # http://localhost:8000
+#
+# To use a real LLM instead of the offline stub:
+#   GITHUB_TOKEN=ghp_... LLM=github-models docker compose run --rm patch
+
+x-base: &base
+  image: autopatch:local
+  working_dir: /work
+  volumes:
+    - .:/work
+  environment:
+    GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    GROQ_API_KEY: ${GROQ_API_KEY:-}
+    LLM: ${LLM:-stub}
+
+services:
+  # Single source-of-truth for the image. `docker compose build` builds this.
+  # Other services reference the same tag and never trigger a parallel build.
+  builder:
+    <<: *base
+    build:
+      context: .
+    command: ["true"]
+    profiles: ["never"]   # never started by `up` — exists only to own `build:`
+
+  scan:
+    <<: *base
+    entrypoint: ["bash", "-c"]
+    command:
+      - |
+        set -e
+        cd target-app
+        semgrep --config p/python --config p/security-audit --sarif --output ../semgrep.sarif . >/dev/null 2>&1
+        trivy fs --format sarif --output ../trivy.sarif --quiet .
+        echo "scan complete -> semgrep.sarif, trivy.sarif"
+
+  demo:
+    <<: *base
+    entrypoint: ["bash", "-c"]
+    command:
+      - |
+        set -e
+        cd target-app
+        semgrep --config p/python --config p/security-audit --sarif --output ../semgrep.sarif . >/dev/null 2>&1
+        trivy fs --format sarif --output ../trivy.sarif --quiet .
+        cd ..
+        python3 src/autopatch.py --sarif semgrep.sarif trivy.sarif \
+          --repo-root . --target-root target-app --llm "${LLM:-stub}" --dry-run
+
+  patch:
+    <<: *base
+    entrypoint: ["bash", "-c"]
+    command:
+      - |
+        set -e
+        cd target-app
+        semgrep --config p/python --config p/security-audit --sarif --output ../semgrep.sarif . >/dev/null 2>&1
+        trivy fs --format sarif --output ../trivy.sarif --quiet .
+        cd ..
+        python3 src/autopatch.py --sarif semgrep.sarif trivy.sarif \
+          --repo-root . --target-root target-app --llm "${LLM:-stub}"
+
+  verify:
+    <<: *base
+    # sed-strip CRLF so verify.sh runs cleanly even if the friend extracted a
+    # Windows zip that converted line endings.
+    entrypoint: ["bash", "-c"]
+    command: ["sed 's/\\r$//' /work/verify.sh | bash -s"]
+
+  dashboard:
+    <<: *base
+    entrypoint: ["python3", "-m", "http.server", "8000", "--directory", "/work/dashboard"]
+    ports:
+      - "8000:8000"

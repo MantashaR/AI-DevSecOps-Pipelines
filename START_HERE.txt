@@ -1,0 +1,64 @@
+================================================================================
+  AutoPatch — HCLTech CoE PS-11 Submission
+  AI-Augmented DevSecOps Pipeline with Automated Vulnerability Remediation
+================================================================================
+
+Hi — open HANDOVER.md for the full walkthrough. The 30-second version is below.
+
+
+WHAT YOU NEED
+-------------
+  Docker Desktop  (Windows / macOS / Linux)
+  That's it. No Python, no semgrep, no trivy on your host machine.
+
+  Windows:  https://docs.docker.com/desktop/install/windows-install/
+            (enable WSL2 backend during install — default since 2022)
+
+
+WHAT TO RUN (3 COMMANDS)
+------------------------
+  1.  Open a terminal in the project folder
+        Windows PowerShell, cmd, or any shell — all work.
+
+  2.  Build the image (one time, ~3 minutes):
+        docker compose build
+
+  3.  Run the self-test:
+        docker compose run --rm verify
+
+      You should see 8 [PASS] lines and finally:
+        =========================================
+         ALL CHECKS PASSED — project is healthy
+        =========================================
+
+
+THE LIVE DEMO (after verify passes)
+-----------------------------------
+  docker compose run --rm patch       # actually patches the vulnerable app
+  docker compose up dashboard         # http://localhost:8000  (Ctrl-C to stop)
+  git -C . diff target-app/app.py     # see what got fixed (if you cloned via git)
+
+
+WHAT THE PROJECT DOES — 30-SECOND ELEVATOR PITCH
+------------------------------------------------
+  AutoPatch is a single GitHub Actions workflow that, on every PR:
+    1. Scans with Semgrep (SAST) + Trivy (SCA)
+    2. Asks an LLM to triage each finding and produce a unified-diff fix
+    3. Auto-opens a fix-PR with the patch applied
+    4. Re-scans to PROVE the patch closed the vulnerability  <-- the novelty
+    5. Renders an MTTR dashboard on GitHub Pages
+
+  Zero servers, zero databases, zero monthly cost. The runner is the compute,
+  the repo is the storage, GitHub Models is the LLM.
+
+
+NEXT STEPS
+----------
+  - Read HANDOVER.md (everything about the project)
+  - Read README.md   (the public-facing pitch)
+  - Open dashboard/index.html in a browser to see the dashboard layout
+
+  If anything fails, scroll to the "Troubleshooting" section at the bottom
+  of HANDOVER.md — every error I've seen is documented there.
+
+================================================================================

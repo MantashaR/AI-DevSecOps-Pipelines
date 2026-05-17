@@ -1,0 +1,104 @@
+{
+  "25036247a2940daa": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "25249a787c31f1eb": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "32b1016525c708a2": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "33ad795739c2dd3f": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "4fc612c04bb19925": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "6dc90e95f21cd84f": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "6e5e806dc4043a7d": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "85773e8c86ada9bf": {
+    "fix_diff": "--- a/app.py\n+++ b/app.py\n@@ -22,7 +22,7 @@\n @app.route(\"/ping\")\n def ping():\n     host = request.args.get(\"host\", \"127.0.0.1\")\n-    result = subprocess.check_output(\"ping -c 1 \" + host, shell=True)\n+    result = subprocess.check_output([\"ping\", \"-c\", \"1\", host], shell=False)\n     return result\n \n \n",
+    "is_reachable": true,
+    "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+    "severity": "high"
+  },
+  "89abfb6b3a266263": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "90d2bbc0fe664dca": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "ab7fb9064f05b8bd": {
+    "fix_diff": "--- a/app.py\n+++ b/app.py\n@@ -14,8 +14,8 @@\n     name = request.args.get(\"name\", \"\")\n     conn = sqlite3.connect(\"users.db\")\n     cur = conn.cursor()\n-    query = \"SELECT * FROM users WHERE username = '\" + name + \"'\"\n-    cur.execute(query)\n+    query = \"SELECT * FROM users WHERE username = ?\"\n+    cur.execute(query, (name,))\n     return str(cur.fetchone())\n \n \n",
+    "is_reachable": true,
+    "rationale": "Replaces string concatenation with sqlite3 positional bind parameters, eliminating SQL injection while preserving query semantics.",
+    "severity": "high"
+  },
+  "bd81e9e14d9d8333": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "beb929ae531e3d35": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "ccc10acd829938c2": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "db10cec296b14549": {
+    "fix_diff": "--- a/app.py\n+++ b/app.py\n@@ -22,7 +22,7 @@\n @app.route(\"/ping\")\n def ping():\n     host = request.args.get(\"host\", \"127.0.0.1\")\n-    result = subprocess.check_output(\"ping -c 1 \" + host, shell=True)\n+    result = subprocess.check_output([\"ping\", \"-c\", \"1\", host], shell=False)\n     return result\n \n \n",
+    "is_reachable": true,
+    "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+    "severity": "high"
+  },
+  "e13f40bbfb0392cf": {
+    "fix_diff": "",
+    "is_reachable": false,
+    "rationale": "Stub triage: no canned fix for this rule. Wire up a real LLM (--llm github-models) for full coverage.",
+    "severity": "low"
+  },
+  "e2f0acbf4f6061a1": {
+    "fix_diff": "--- a/app.py\n+++ b/app.py\n@@ -22,7 +22,7 @@\n @app.route(\"/ping\")\n def ping():\n     host = request.args.get(\"host\", \"127.0.0.1\")\n-    result = subprocess.check_output(\"ping -c 1 \" + host, shell=True)\n+    result = subprocess.check_output([\"ping\", \"-c\", \"1\", host], shell=False)\n     return result\n \n \n",
+    "is_reachable": true,
+    "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+    "severity": "high"
+  }
+}

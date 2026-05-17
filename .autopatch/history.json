@@ -1,0 +1,212 @@
+[
+  {
+    "total_findings": 17,
+    "fixes_applied": 2,
+    "fixes_skipped_no_diff": 2,
+    "fixes_skipped_low_severity": 13,
+    "cache_hits": 0,
+    "llm_calls": 17,
+    "by_severity": {
+      "critical": 0,
+      "high": 4,
+      "medium": 0,
+      "low": 13,
+      "noise": 0
+    },
+    "by_tool": {
+      "Semgrep OSS": 4,
+      "Trivy": 13
+    },
+    "fixes": [
+      {
+        "hash": "ab7fb9064f05b8bd",
+        "rule": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "path": "app.py",
+        "line": 17,
+        "severity": "high",
+        "applied": true,
+        "rationale": "Replaces string concatenation with sqlite3 positional bind parameters, eliminating SQL injection while preserving query semantics.",
+        "message": "dry-run OK"
+      },
+      {
+        "hash": "db10cec296b14549",
+        "rule": "python.flask.security.injection.subprocess-injection.subprocess-injection",
+        "path": "app.py",
+        "line": 25,
+        "severity": "high",
+        "applied": true,
+        "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+        "message": "dry-run OK"
+      }
+    ],
+    "llm_backend": "stub",
+    "dry_run": true,
+    "timestamp": "2026-05-03T15:16:13.222559+00:00"
+  },
+  {
+    "total_findings": 17,
+    "fixes_applied": 2,
+    "fixes_skipped_no_diff": 2,
+    "fixes_skipped_low_severity": 13,
+    "cache_hits": 17,
+    "llm_calls": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 4,
+      "medium": 0,
+      "low": 13,
+      "noise": 0
+    },
+    "by_tool": {
+      "Semgrep OSS": 4,
+      "Trivy": 13
+    },
+    "fixes": [
+      {
+        "hash": "ab7fb9064f05b8bd",
+        "rule": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "path": "app.py",
+        "line": 17,
+        "severity": "high",
+        "applied": true,
+        "rationale": "Replaces string concatenation with sqlite3 positional bind parameters, eliminating SQL injection while preserving query semantics.",
+        "message": "applied"
+      },
+      {
+        "hash": "db10cec296b14549",
+        "rule": "python.flask.security.injection.subprocess-injection.subprocess-injection",
+        "path": "app.py",
+        "line": 25,
+        "severity": "high",
+        "applied": true,
+        "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+        "message": "applied"
+      }
+    ],
+    "llm_backend": "stub",
+    "dry_run": false,
+    "timestamp": "2026-05-03T15:16:13.938676+00:00"
+  },
+  {
+    "total_findings": 17,
+    "fixes_applied": 2,
+    "fixes_skipped_no_diff": 2,
+    "fixes_skipped_low_severity": 13,
+    "cache_hits": 17,
+    "llm_calls": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 4,
+      "medium": 0,
+      "low": 13,
+      "noise": 0
+    },
+    "by_tool": {
+      "Semgrep OSS": 4,
+      "Trivy": 13
+    },
+    "fixes": [
+      {
+        "hash": "ab7fb9064f05b8bd",
+        "rule": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "path": "app.py",
+        "line": 17,
+        "severity": "high",
+        "applied": true,
+        "rationale": "Replaces string concatenation with sqlite3 positional bind parameters, eliminating SQL injection while preserving query semantics.",
+        "message": "applied"
+      },
+      {
+        "hash": "db10cec296b14549",
+        "rule": "python.flask.security.injection.subprocess-injection.subprocess-injection",
+        "path": "app.py",
+        "line": 25,
+        "severity": "high",
+        "applied": true,
+        "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+        "message": "applied"
+      }
+    ],
+    "llm_backend": "stub",
+    "dry_run": false,
+    "timestamp": "2026-05-03T15:19:51.638297+00:00"
+  },
+  {
+    "total_findings": 13,
+    "fixes_applied": 0,
+    "fixes_skipped_no_diff": 0,
+    "fixes_skipped_low_severity": 13,
+    "cache_hits": 13,
+    "llm_calls": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 13,
+      "noise": 0
+    },
+    "by_tool": {
+      "Trivy": 13
+    },
+    "fixes": [],
+    "llm_backend": "stub",
+    "dry_run": false,
+    "timestamp": "2026-05-03T15:26:32.242937+00:00"
+  },
+  {
+    "total_findings": 13,
+    "fixes_applied": 0,
+    "fixes_skipped_no_diff": 0,
+    "fixes_skipped_low_severity": 13,
+    "cache_hits": 13,
+    "llm_calls": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 13,
+      "noise": 0
+    },
+    "by_tool": {
+      "Trivy": 13
+    },
+    "fixes": [],
+    "llm_backend": "stub",
+    "dry_run": false,
+    "timestamp": "2026-05-16T07:29:23.087554+00:00"
+  },
+  {
+    "total_findings": 14,
+    "fixes_applied": 0,
+    "fixes_skipped_no_diff": 0,
+    "fixes_skipped_low_severity": 13,
+    "cache_hits": 14,
+    "llm_calls": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 1,
+      "medium": 0,
+      "low": 13,
+      "noise": 0
+    },
+    "by_tool": {
+      "Semgrep OSS": 1,
+      "Trivy": 13
+    },
+    "fixes": [
+      {
+        "hash": "85773e8c86ada9bf",
+        "rule": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+        "path": "app.py",
+        "line": 25,
+        "severity": "high",
+        "applied": false,
+        "rationale": "Replaces shell=True string concatenation with a list argv and shell=False, preventing command injection via crafted host values.",
+        "message": "dry-run failed: checking file app.py\nHunk #1 FAILED at 22.\n1 out of 1 hunk FAILED\n\n"
+      }
+    ],
+    "llm_backend": "stub",
+    "dry_run": false,
+    "timestamp": "2026-05-16T07:33:21.302712+00:00"
+  }
+]

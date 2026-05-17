@@ -1,0 +1,46 @@
+name: AutoPatch
+description: AI-augmented DevSecOps remediation — scans, triages, and auto-patches via GitHub Models
+author: rishabh
+branding: { icon: shield, color: green }
+
+inputs:
+  target-root:
+    description: Path to the codebase being scanned
+    required: false
+    default: "."
+  llm:
+    description: LLM backend (stub, github-models, groq)
+    required: false
+    default: github-models
+  max-fixes:
+    description: Maximum number of patches to apply per run
+    required: false
+    default: "10"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with: { python-version: "3.11" }
+
+    - shell: bash
+      run: |
+        pip install --quiet semgrep
+        curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+          | sh -s -- -b /tmp v0.70.0
+        echo "/tmp" >> $GITHUB_PATH
+
+    - shell: bash
+      run: |
+        semgrep --config p/security-audit --sarif --output semgrep.sarif "${{ inputs.target-root }}" || true
+        trivy fs --format sarif --output trivy.sarif "${{ inputs.target-root }}" || true
+
+    - shell: bash
+      env: { GITHUB_TOKEN: ${{ github.token }} }
+      run: |
+        python "${{ github.action_path }}/src/autopatch.py" \
+          --sarif semgrep.sarif trivy.sarif \
+          --repo-root . \
+          --target-root "${{ inputs.target-root }}" \
+          --llm "${{ inputs.llm }}" \
+          --max-fixes "${{ inputs.max-fixes }}"

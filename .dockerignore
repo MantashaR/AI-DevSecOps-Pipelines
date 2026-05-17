@@ -1,0 +1,12 @@
+.git
+.github
+.autopatch
+*.sarif
+__pycache__
+**/__pycache__
+*.pyc
+.DS_Store
+target-app/users.db
+HANDOVER.md
+README.md
+dashboard/history.json

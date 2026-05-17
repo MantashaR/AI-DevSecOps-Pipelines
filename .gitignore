@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+*.sarif
+.DS_Store
+target-app/users.db

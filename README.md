@@ -1,9 +1,10 @@
-# AutoPatch
+## AI-Augmented DevSecOps Pipeline
 
-**AI-augmented DevSecOps pipeline with automated vulnerability remediation.**
-HCLTech CoE PS-11 · Mini Project Compendium 2026.
+This project is a Flask-based DevSecOps workspace for scanning Python snippets, storing findings, and requesting AI-assisted remediation guidance from Gemini.
 
-AutoPatch is a single GitHub Actions workflow that:
+HCLTech · Mini Project Compendium 2026.
+
+ AI-Augmented DevSecOps Pipeline is a single GitHub Actions workflow that:
 
 1. Scans every PR with **Semgrep** (SAST) and **Trivy** (SCA).
 2. Triages each finding with an **LLM** (severity, reachability, code-level fix).

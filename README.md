@@ -58,25 +58,6 @@ cd autopatch
 make demo | patch | dashboard
 ```
 
-The **stub backend** uses deterministic canned fixes for the demo target. To
-process arbitrary repos, swap to a real LLM:
-
-```bash
-export GITHUB_TOKEN=ghp_...               # personal token, scope: models:read
-python3 src/autopatch.py ... --llm github-models
-
-# OR
-export GROQ_API_KEY=gsk_...               # free at console.groq.com
-python3 src/autopatch.py ... --llm groq
-```
-
----
-
-## Install on your own repo (one workflow file)
-
-Copy `.github/workflows/autopatch.yml` into your repo and set
-`target-root` to the directory you want scanned. The workflow uses the built-in
-`GITHUB_TOKEN` with `models: read` permission — no extra secrets needed.
 
 ---
 
@@ -97,37 +78,6 @@ tests/fixtures/           Sample SARIF for unit-style runs
 
 ---
 
-## End-to-end demo (5 minutes, all local)
-
-```bash
-# Vulnerable state
-grep -nE "shell=True|cur.execute|name \+|admin123" target-app/app.py
-#   9:DB_PASSWORD = "admin123"
-#  17:query = "SELECT * FROM users WHERE username = '" + name + "'"
-#  25:subprocess.check_output("ping -c 1 " + host, shell=True)
-
-# Scan + auto-patch
-cd target-app && semgrep --config p/python --config p/security-audit --sarif -o ../semgrep.sarif . && trivy fs --format sarif -o ../trivy.sarif --quiet . && cd ..
-python3 src/autopatch.py --sarif semgrep.sarif trivy.sarif --repo-root . --target-root target-app --llm stub
-
-# Verify the file is now safe
-grep -nE "shell=True|cur.execute|name \+" target-app/app.py
-# (only the parameterised execute(query, (name,)) and shell=False remain)
-
-# Self-validation: re-scan
-cd target-app && semgrep --config p/python --config p/security-audit --sarif -o ../semgrep.after.sarif . && cd ..
-# 4 findings -> 0 findings. The patches actually closed the vulnerabilities.
-```
-
-Verified outputs from the dry-run above:
-
-| Stage | Findings | Auto-fixed | Remaining |
-|---|---|---|---|
-| Semgrep before | 4 | — | — |
-| AutoPatch run | 17 (4 sast + 13 sca) | **2** | 15 (low-severity SCA, need version-bump LLM) |
-| Semgrep after | 0 | — | **all 4 SAST findings closed** |
-
----
 
 ## Roadmap
 

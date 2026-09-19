@@ -1,6 +1,6 @@
 name: AutoPatch
 description: AI-augmented DevSecOps remediation — scans, triages, and auto-patches via GitHub Models
-author: rishabh
+author: MantashaR
 branding: { icon: shield, color: green }
 
 inputs:

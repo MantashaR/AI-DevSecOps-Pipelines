@@ -68,7 +68,7 @@ src/                      Python pipeline (sarif parser, triage, patch, store)
 target-app/               Intentionally vulnerable Flask app (the demo victim)
 dashboard/                Static dashboard (GitHub Pages-ready)
 .github/workflows/        AutoPatch CI workflow
-action.yml                Composite action — for use as `uses: rishabh/autopatch@v1`
+action.yml                Composite action — for use as `uses: MantashaR/AI-DevSecOps-Pipelines@main`
 tests/fixtures/           Sample SARIF for unit-style runs
 ```
 
